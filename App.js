@@ -39,28 +39,57 @@
 //AppRegistry.registerComponent('CouchbumsMobileUi', () => Bananas, CouchBums);
 
 import React, { Component } from 'react';
-import { Alert, Button, TextInput, View, StyleSheet, Text } from 'react-native';
+import { Alert, Button, TextInput, View, StyleSheet, Text, FlatList, ActivityIndicator } from 'react-native';
 
-export default class App extends Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       username: '',
       password: '',
+      isLoading: true,
     };
   }
 
+  componentDidMount(){
+  return fetch('https://elpafse1rj.execute-api.us-east-1.amazonaws.com/dev/users')
+        .then((response) => response.json())
+        .then((responseJson) => {
+
+          this.setState({
+            isLoading: false,
+            dataSource: responseJson,
+          }, function(){
+
+          });
+
+        })
+        .catch((error) =>{
+          console.error(error);
+        });
+}
+
   onLogin() {
     const { username, password } = this.state;
-
     Alert.alert('Credentials', `${username} + ${password}`);
+    Alert.alert('votha');
   }
 
   render() {
+
+      if(this.state.isLoading){
+        return(
+          <View style={{flex: 1, padding: 20}}>
+            <ActivityIndicator/>
+          </View>
+        )
+      }
+
     return (
       <View style={styles.container}>
         <Text>Welcome To CouchBums!</Text>
+        <Text>The world's best app'</Text>
         <TextInput
           value={this.state.username}
           onChangeText={(username) => this.setState({ username })}
@@ -80,6 +109,13 @@ export default class App extends Component {
           style={styles.input}
           onPress={this.onLogin.bind(this)}
         />
+        <FlatList
+            data={this.state.dataSource}
+            renderItem={({item}) => <Text>{item.email}, {item.name}</Text>}
+            keyExtractor={({id}, index) => id}
+            style={styles.list}
+         />
+
       </View>
     );
   }
@@ -91,7 +127,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#ecf0f1',
-
   },
   input: {
     width: 200,
@@ -100,6 +135,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     marginBottom: 10,
+  },
+  list: {
+  flex: 1,
+  paddingTop: 20,
   }
 });
 
