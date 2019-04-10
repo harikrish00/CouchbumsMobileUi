@@ -89,7 +89,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <Text>Welcome To CouchBums!</Text>
-        <Text>The world's best app'</Text>
+        <Text>The world's best app test'</Text>
         <TextInput
           value={this.state.username}
           onChangeText={(username) => this.setState({ username })}
